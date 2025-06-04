@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown Power Surgeon</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <div class="header">
+            <h1>⚡ Markdown Power Surgeon</h1>
+            <p>Advanced Markdown editor optimized for dev.to and ChatGPT with intelligent auto-formatting</p>
+        </div>
+
+        <div class="toolbar">
+            <button class="btn" onclick="insertFormat('**', '**', 'Bold text')">Bold</button>
+            <button class="btn" onclick="insertFormat('*', '*', 'Italic text')">Italic</button>
+            <button class="btn" onclick="insertFormat('`', '`', 'code')">Code</button>
+            <button class="btn" onclick="insertFormat('```\n', '\n```', 'code block')">Code Block</button>
+            <button class="btn" onclick="insertFormat('> ', '', 'Quote text')">Quote</button>
+            <button class="btn" onclick="insertFormat('- ', '', 'List item')">List</button>
+            <button class="btn" onclick="insertFormat('## ', '', 'Heading')">H2</button>
+            <button class="btn" onclick="insertFormat('### ', '', 'Heading')">H3</button>
+            <button class="btn secondary" onclick="autoFormat()">🪄 Auto Format</button>
+            <button class="btn secondary" onclick="optimizeForDevTo()">📝 dev.to Style</button>
+            <button class="btn secondary" onclick="optimizeForChatGPT()">🤖 ChatGPT Style</button>
+            
+            <div class="export-menu">
+                <button class="btn" onclick="toggleExportMenu()">📤 Export</button>
+                <div class="export-dropdown" id="exportDropdown">
+                    <div class="export-option" onclick="exportMarkdown()">📝 Markdown (.md)</div>
+                    <div class="export-option" onclick="exportHTML()">🌐 HTML</div>
+                    <div class="export-option" onclick="copyToClipboard()">📋 Copy to Clipboard</div>
+                </div>
+            </div>
+
+            <div class="stats" id="stats">
+                Words: 0 | Characters: 0 | Lines: 0
+            </div>
+        </div>
+
+        <div class="editor-container">
+            <div class="editor-panel">
+                <div class="panel-header">📝 Editor</div>
+                <textarea class="editor" id="editor" placeholder="Start writing your markdown here...
+
+# Welcome to Markdown Power Surgeon!
+
+This editor is optimized for **dev.to** and **ChatGPT** formatting.
+
+## Features:
+- Live preview
+- Auto-formatting for different platforms
+- Smart text analysis
+- Export options
+
+Try the auto-format button to see the magic! ✨"></textarea>
+            </div>
+
+            <div class="preview-panel">
+                <div class="panel-header">👁️ Live Preview</div>
+                <div class="preview" id="preview"></div>
+            </div>
+        </div>
+
+        <div class="format-panel">
+            <h3 style="margin-bottom: 15px; color: #333;">🎯 Smart Formatting Options</h3>
+            <div class="format-options">
+                <div class="format-btn" data-format="dev-article" onclick="applyFormat(this, 'dev-article')">
+                    <strong>📚 Dev Article</strong><br>
+                    <small>Headers, code blocks, lists</small>
+                </div>
+                <div class="format-btn" data-format="tutorial" onclick="applyFormat(this, 'tutorial')">
+                    <strong>🎓 Tutorial Style</strong><br>
+                    <small>Step-by-step format</small>
+                </div>
+                <div class="format-btn" data-format="chatgpt-prompt" onclick="applyFormat(this, 'chatgpt-prompt')">
+                    <strong>🤖 ChatGPT Prompt</strong><br>
+                    <small>Clear, structured prompts</small>
+                </div>
+                <div class="format-btn" data-format="readme" onclick="applyFormat(this, 'readme')">
+                    <strong>📋 README Style</strong><br>
+                    <small>Project documentation</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
