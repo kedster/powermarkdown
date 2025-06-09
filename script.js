@@ -1,14 +1,34 @@
-       // In-memory storage for the session
-        let editorState = {
-            content: '',
-            currentFormat: null
-        };
+        // Configuration
+        const WORKER_URL = 'https://your-worker.your-subdomain.workers.dev'; // Replace with your worker URL
+        const MAX_CHARS = 1000;
+        
+        // State management
+        let sessionId = generateSessionId();
+        let currentProcessing = false;
 
+        // DOM elements
         const editor = document.getElementById('editor');
         const preview = document.getElementById('preview');
         const stats = document.getElementById('stats');
+        const charCounter = document.getElementById('charCounter');
+        const errorMessage = document.getElementById('errorMessage');
 
-        // Configure marked with syntax highlighting
+        // AI Processing prompts mapped to each format
+        const prompts = {
+            'professional-email': 'Transform the following text into a professional business email with proper greeting, body, and closing:',
+            'blog-post': 'Convert the following text into an engaging blog post with a compelling title, introduction, main content with subheadings, and conclusion:',
+            'technical-summary': 'Create a concise technical summary from the following text, organizing it with clear headings, key points, and technical details:',
+            'creative-writing': 'Transform the following text into creative, engaging content with vivid descriptions, storytelling elements, and compelling narrative:',
+            'social-media': 'Rewrite the following text for social media platforms, making it engaging, shareable, and optimized for social engagement with relevant hashtags:',
+            'documentation': 'Format the following text as clear, professional documentation with proper structure, headings, and easy-to-follow formatting:'
+        };
+
+        // Initialize
+        function generateSessionId() {
+            return 'session_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+        }
+
+        // Configure marked for preview
         marked.setOptions({
             highlight: function(code, lang) {
                 if (lang && hljs.getLanguage(lang)) {
@@ -22,27 +42,35 @@
             gfm: true
         });
 
-        // Real-time preview update
+        // Event listeners
         editor.addEventListener('input', function() {
             const content = editor.value;
-            editorState.content = content;
-            updatePreview(content);
             updateStats(content);
+            updateCharCounter(content);
         });
+
+        function updateStats(content) {
+            const chars = content.length;
+            stats.textContent = `Characters: ${chars} / ${MAX_CHARS}`;
+        }
+
+        function updateCharCounter(content) {
+            const chars = content.length;
+            charCounter.textContent = `${chars}/${MAX_CHARS}`;
+            
+            if (chars > MAX_CHARS) {
+                charCounter.classList.add('warning');
+            } else {
+                charCounter.classList.remove('warning');
+            }
+        }
 
         function updatePreview(content) {
             try {
                 preview.innerHTML = marked.parse(content);
             } catch (error) {
-                preview.innerHTML = '<p style="color: red;">Error parsing markdown</p>';
+                preview.innerHTML = '<p style="color: red;">Error rendering content</p>';
             }
-        }
-
-        function updateStats(content) {
-            const words = content.trim() ? content.trim().split(/\s+/).length : 0;
-            const chars = content.length;
-            const lines = content.split('\n').length;
-            stats.textContent = `Words: ${words} | Characters: ${chars} | Lines: ${lines}`;
         }
 
         function insertFormat(before, after, placeholder) {
@@ -61,373 +89,148 @@
                 editor.setSelectionRange(start + newText.length, start + newText.length);
             }
             
-            editor.dispatchEvent(new Event('input'));
+            updateStats(editor.value);
+            updateCharCounter(editor.value);
         }
 
-        function autoFormat() {
-            let content = editor.value;
-            
-            // Smart auto-formatting based on content analysis
-            if (content.includes('function') || content.includes('const') || content.includes('class')) {
-                content = formatAsCode(content);
-            } else if (content.includes('step') || content.includes('tutorial')) {
-                content = formatAsTutorial(content);
-            } else {
-                content = formatAsArticle(content);
-            }
-            
-            editor.value = content;
-            editor.dispatchEvent(new Event('input'));
-        }
-
-        function formatAsCode(content) {
-            // Wrap code-like content in code blocks
-            const lines = content.split('\n');
-            let formatted = [];
-            let inCodeBlock = false;
-            
-            for (let line of lines) {
-                if (line.match(/^(function|const|let|var|class|import|export)/)) {
-                    if (!inCodeBlock) {
-                        formatted.push('```javascript');
-                        inCodeBlock = true;
-                    }
-                    formatted.push(line);
-                } else if (inCodeBlock && line.trim() === '') {
-                    formatted.push(line);
-                } else if (inCodeBlock) {
-                    formatted.push('```');
-                    formatted.push('');
-                    formatted.push(line);
-                    inCodeBlock = false;
-                } else {
-                    formatted.push(line);
-                }
-            }
-            
-            if (inCodeBlock) {
-                formatted.push('```');
-            }
-            
-            return formatted.join('\n');
-        }
-
-        function formatAsTutorial(content) {
-            const lines = content.split('\n');
-            let formatted = [];
-            let stepCounter = 1;
-            
-            for (let line of lines) {
-                if (line.toLowerCase().includes('step') && !line.startsWith('#')) {
-                    formatted.push(`## Step ${stepCounter}: ${line.replace(/step\s*\d*:?\s*/i, '')}`);
-                    stepCounter++;
-                } else {
-                    formatted.push(line);
-                }
-            }
-            
-            return formatted.join('\n');
-        }
-
-        function formatAsArticle(content) {
-            const lines = content.split('\n');
-            let formatted = [];
-            
-            for (let line of lines) {
-                // Auto-detect headings
-                if (line.length > 0 && !line.startsWith('#') && !line.startsWith('-') && !line.startsWith('*')) {
-                    if (line.length < 60 && !line.includes('.') && !line.includes(',')) {
-                        // Likely a heading
-                        formatted.push(`## ${line}`);
-                    } else {
-                        formatted.push(line);
-                    }
-                } else {
-                    formatted.push(line);
-                }
-            }
-            
-            return formatted.join('\n');
-        }
-
-        function optimizeForDevTo() {
-            let content = editor.value;
-            
-            // Add dev.to specific formatting
-            if (!content.includes('---')) {
-                const frontMatter = `---
-title: "Your Title Here"
-published: false
-description: "Brief description"
-tags: [javascript, tutorial, webdev]
-canonical_url: 
-cover_image: 
----
-
-`;
-                content = frontMatter + content;
-            }
-            
-            // Optimize code blocks for dev.to
-            content = content.replace(/```(\w+)/g, '```$1');
-            
-            editor.value = content;
-            editor.dispatchEvent(new Event('input'));
-        }
-
-        function optimizeForChatGPT() {
-            let content = editor.value;
-            
-            // Format for clear ChatGPT communication
-            const lines = content.split('\n');
-            let formatted = [];
-            
-            for (let line of lines) {
-                if (line.startsWith('Q:') || line.startsWith('Question:')) {
-                    formatted.push(`**${line}**`);
-                } else if (line.startsWith('A:') || line.startsWith('Answer:')) {
-                    formatted.push(`**${line}**`);
-                } else if (line.includes('please') || line.includes('can you')) {
-                    formatted.push(`> ${line}`);
-                } else {
-                    formatted.push(line);
-                }
-            }
-            
-            editor.value = formatted.join('\n');
-            editor.dispatchEvent(new Event('input'));
-        }
-
-        function applyFormat(element, format) {
-            // Remove active class from all buttons
-            document.querySelectorAll('.format-btn').forEach(btn => btn.classList.remove('active'));
-            element.classList.add('active');
-            
-            editorState.currentFormat = format;
-            
-            const templates = {
-                'dev-article': `# Your Article Title
-
-Brief introduction to your topic...
-
-## Introduction
-
-Explain what you'll cover in this article.
-
-## Main Content
-
-### Subsection 1
-
-Your content here...
-
-\`\`\`javascript
-// Code example
-const example = "Hello World";
-console.log(example);
-\`\`\`
-
-### Subsection 2
-
-More content...
-
-## Conclusion
-
-Wrap up your thoughts...
-
----
-
-Thanks for reading! Follow me for more content.`,
-
-                'tutorial': `# Step-by-Step Tutorial: [Topic]
-
-## Prerequisites
-
-- Requirement 1
-- Requirement 2
-- Requirement 3
-
-## Step 1: Setup
-
-First, let's set up our environment...
-
-\`\`\`bash
-npm install package-name
-\`\`\`
-
-## Step 2: Configuration
-
-Next, we'll configure...
-
-## Step 3: Implementation
-
-Now let's implement the solution...
-
-## Step 4: Testing
-
-Finally, let's test our implementation...
-
-## Conclusion
-
-You've successfully learned how to...`,
-
-                'chatgpt-prompt': `**Context:** Provide clear context about what you need
-
-**Task:** Clearly state what you want ChatGPT to do
-
-**Requirements:**
-- Specific requirement 1
-- Specific requirement 2
-- Output format needed
-
-**Example:** If helpful, provide an example of what you're looking for
-
-**Additional Notes:** Any extra context or constraints`,
-
-                'readme': `# Project Name
-
-Brief description of what this project does.
-
-## Features
-
-- Feature 1
-- Feature 2
-- Feature 3
-
-## Installation
-
-\`\`\`bash
-npm install project-name
-\`\`\`
-
-## Usage
-
-\`\`\`javascript
-const project = require('project-name');
-project.doSomething();
-\`\`\`
-
-## API Reference
-
-### Method 1
-
-Description of method...
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## License
-
-This project is licensed under the MIT License.`
-            };
-            
-            if (templates[format]) {
-                editor.value = templates[format];
-                editor.dispatchEvent(new Event('input'));
-            }
-        }
-
-        function toggleExportMenu() {
-            const dropdown = document.getElementById('exportDropdown');
-            dropdown.classList.toggle('show');
-        }
-
-        function exportMarkdown() {
-            const content = editor.value;
-            const blob = new Blob([content], { type: 'text/markdown' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'document.md';
-            a.click();
-            URL.revokeObjectURL(url);
-            toggleExportMenu();
-        }
-
-        function exportHTML() {
-            const htmlContent = `<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Markdown Document</title>
-    <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px; }
-        code { background: #f4f4f4; padding: 2px 6px; border-radius: 3px; }
-        pre { background: #f4f4f4; padding: 15px; border-radius: 5px; overflow-x: auto; }
-        blockquote { border-left: 4px solid #ddd; margin: 0; padding-left: 20px; color: #666; }
-    </style>
-</head>
-<body>
-${preview.innerHTML}
-</body>
-</html>`;
-            
-            const blob = new Blob([htmlContent], { type: 'text/html' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'document.html';
-            a.click();
-            URL.revokeObjectURL(url);
-            toggleExportMenu();
+        function clearEditor() {
+            editor.value = '';
+            preview.innerHTML = '<p style="color: #666; font-style: italic;">Your AI-processed text will appear here...</p>';
+            updateStats('');
+            updateCharCounter('');
+            clearActiveFormats();
         }
 
         function copyToClipboard() {
-            navigator.clipboard.writeText(editor.value).then(() => {
-                alert('Markdown copied to clipboard!');
-            });
-            toggleExportMenu();
+            const previewText = preview.textContent || preview.innerText;
+            if (previewText && previewText !== 'Your AI-processed text will appear here...') {
+                navigator.clipboard.writeText(previewText).then(() => {
+                    showMessage('Content copied to clipboard!', 'success');
+                }).catch(() => {
+                    // Fallback for older browsers
+                    const textarea = document.createElement('textarea');
+                    textarea.value = previewText;
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textarea);
+                    showMessage('Content copied to clipboard!', 'success');
+                });
+            } else {
+                showMessage('No processed content to copy', 'error');
+            }
         }
 
-        // Close export menu when clicking outside
-        document.addEventListener('click', function(event) {
-            const exportMenu = document.querySelector('.export-menu');
-            if (!exportMenu.contains(event.target)) {
-                document.getElementById('exportDropdown').classList.remove('show');
+        function clearActiveFormats() {
+            document.querySelectorAll('.format-btn').forEach(btn => {
+                btn.classList.remove('active', 'processing');
+            });
+        }
+
+        async function processWithAI(element, format) {
+            const rawText = editor.value.trim();
+            
+            // Validation
+            if (!rawText) {
+                showMessage('Please enter some text to process', 'error');
+                return;
             }
-        });
+            
+            if (rawText.length > MAX_CHARS) {
+                showMessage(`Text exceeds ${MAX_CHARS} character limit`, 'error');
+                return;
+            }
+            
+            if (currentProcessing) {
+                showMessage('Already processing. Please wait...', 'error');
+                return;
+            }
 
-        // Initialize with default content
-        const defaultContent = `# Welcome to Markdown Power Surgeon! ⚡
+            // UI updates
+            currentProcessing = true;
+            clearActiveFormats();
+            element.classList.add('active', 'processing');
+            element.innerHTML = `<div class="loading-spinner"></div><strong>Processing...</strong><br><small>AI is working on your text</small>`;
+            
+            try {
+                const prompt = prompts[format];
+                const response = await fetch(WORKER_URL + '/process', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        text: rawText,
+                        prompt: prompt,
+                        format: format,
+                        sessionId: sessionId
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    updatePreview(result.processedText);
+                    showMessage('Text processed successfully!', 'success');
+                } else {
+                    throw new Error(result.error || 'Processing failed');
+                }
+                
+            } catch (error) {
+                console.error('AI processing error:', error);
+                showMessage('Failed to process text. Please try again.', 'error');
+                preview.innerHTML = '<p style="color: red;">Error processing text. Please try again.</p>';
+            } finally {
+                currentProcessing = false;
+                element.classList.remove('processing');
+                
+                // Restore button content
+                const formatTitles = {
+                    'professional-email': '📧 Professional Email',
+                    'blog-post': '📝 Blog Post', 
+                    'technical-summary': '📊 Technical Summary',
+                    'creative-writing': '✨ Creative Writing',
+                    'social-media': '📱 Social Media',
+                    'documentation': '📚 Documentation'
+                };
+                
+                const formatDescriptions = {
+                    'professional-email': 'Transform to business email format',
+                    'blog-post': 'Structure as engaging blog content',
+                    'technical-summary': 'Create concise technical overview', 
+                    'creative-writing': 'Enhance with creative flair',
+                    'social-media': 'Optimize for social platforms',
+                    'documentation': 'Format as clear documentation'
+                };
+                
+                element.innerHTML = `<strong>${formatTitles[format]}</strong><br><small>${formatDescriptions[format]}</small>`;
+            }
+        }
 
-This editor is specifically optimized for **dev.to** and **ChatGPT** formatting with intelligent auto-formatting capabilities.
+        function showMessage(message, type) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+            errorMessage.style.backgroundColor = type === 'success' ? '#4CAF50' : '#ff6b6b';
+            
+            setTimeout(() => {
+                errorMessage.style.display = 'none';
+            }, 5000);
+        }
 
-## ✨ Key Features
+        // Initialize with welcome message
+        const welcomeText = `Welcome to AI Text Processor! 
 
-- **Live Preview**: See your markdown rendered in real-time
-- **Smart Auto-Format**: Automatically detects content type and formats accordingly
-- **Platform Optimization**: One-click formatting for dev.to and ChatGPT
-- **Export Options**: Save as Markdown, HTML, or copy to clipboard
-- **Syntax Highlighting**: Code blocks with proper highlighting
+Enter your raw text (up to 1000 characters) and choose an AI processing format below.
 
-## 🚀 Quick Start
+Examples:
+- "Need help with project timeline" → Professional Email
+- "Machine learning basics explanation" → Blog Post  
+- "API documentation notes" → Technical Summary`;
 
-1. Start typing in the editor
-2. Use toolbar buttons for quick formatting
-3. Try the **Auto Format** button to see intelligent formatting
-4. Use **dev.to Style** for blog posts
-5. Use **ChatGPT Style** for clear prompts
-
-## 💡 Pro Tips
-
-- The editor detects code and automatically wraps it in code blocks
-- Tutorial content gets automatically numbered steps
-- Articles get smart heading detection
-- All formatting works great with dev.to and ChatGPT!
-
-\`\`\`javascript
-// Code example with syntax highlighting
-const markdownSurgeon = {
-    power: 'maximum',
-    features: ['auto-format', 'live-preview', 'export'],
-    optimizedFor: ['dev.to', 'ChatGPT']
-};
-
-console.log('Ready to create amazing content! 🎉');
-\`\`\`
-
-> Try the different formatting templates below to see the magic! ✨`;
-
-        editor.value = defaultContent;
-        updatePreview(defaultContent);
-        updateStats(defaultContent);
+        editor.value = welcomeText;
+        updateStats(welcomeText);
+        updateCharCounter(welcomeText);

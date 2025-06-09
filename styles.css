@@ -76,6 +76,12 @@
             background: linear-gradient(45deg, #764ba2, #667eea);
         }
 
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
         .editor-container {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -98,6 +104,19 @@
             font-weight: 600;
             color: #333;
             border-bottom: 1px solid rgba(102, 126, 234, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .char-counter {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .char-counter.warning {
+            color: #ff6b6b;
+            font-weight: bold;
         }
 
         .editor {
@@ -127,68 +146,8 @@
             color: #333;
         }
 
-        .preview h1 { font-size: 2rem; }
-        .preview h2 { font-size: 1.5rem; }
-        .preview h3 { font-size: 1.25rem; }
-
         .preview p {
             margin-bottom: 16px;
-        }
-
-        .preview code {
-            background: #f6f8fa;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-            font-size: 0.9em;
-        }
-
-        .preview pre {
-            background: #1e1e1e;
-            padding: 16px;
-            border-radius: 8px;
-            overflow-x: auto;
-            margin: 16px 0;
-        }
-
-        .preview pre code {
-            background: none;
-            padding: 0;
-            color: #d4d4d4;
-        }
-
-        .preview blockquote {
-            border-left: 4px solid #667eea;
-            padding-left: 16px;
-            margin: 16px 0;
-            color: #666;
-            font-style: italic;
-        }
-
-        .preview ul, .preview ol {
-            padding-left: 24px;
-            margin-bottom: 16px;
-        }
-
-        .preview li {
-            margin-bottom: 4px;
-        }
-
-        .preview table {
-            border-collapse: collapse;
-            width: 100%;
-            margin: 16px 0;
-        }
-
-        .preview th, .preview td {
-            border: 1px solid #ddd;
-            padding: 8px 12px;
-            text-align: left;
-        }
-
-        .preview th {
-            background: #f6f8fa;
-            font-weight: 600;
         }
 
         .format-panel {
@@ -227,6 +186,27 @@
             border-color: #667eea;
         }
 
+        .format-btn.processing {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
         .stats {
             background: rgba(255, 255, 255, 0.9);
             padding: 10px 15px;
@@ -234,6 +214,15 @@
             font-size: 12px;
             color: #666;
             margin-left: auto;
+        }
+
+        .error-message {
+            background: #ff6b6b;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            display: none;
         }
 
         @media (max-width: 768px) {
@@ -253,40 +242,4 @@
             .stats {
                 margin: 10px 0 0 0;
             }
-        }
-
-        .export-menu {
-            position: relative;
-            display: inline-block;
-        }
-
-        .export-dropdown {
-            display: none;
-            position: absolute;
-            top: 100%;
-            left: 0;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            min-width: 150px;
-            z-index: 1000;
-        }
-
-        .export-dropdown.show {
-            display: block;
-        }
-
-        .export-option {
-            padding: 10px 15px;
-            cursor: pointer;
-            border-bottom: 1px solid #eee;
-            transition: background 0.2s;
-        }
-
-        .export-option:hover {
-            background: #f5f5f5;
-        }
-
-        .export-option:last-child {
-            border-bottom: none;
         }
