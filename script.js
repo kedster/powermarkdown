@@ -1,7 +1,7 @@
 // Configuration for worker endpoints
 const CONFIG = {
-    JWT_WORKER_URL: 'https://markdowngpt-worker-jwt.sethkeddy.workers.dev/', // Replace with your JWT worker URL
-    AI_WORKER_URL: 'https://markdowngpt-worker-ai.sethkeddy.workers.dev/',   // Replace with your AI worker URL
+    JWT_WORKER_URL: 'https://markdowngpt-worker-jwt.sethkeddy.workers.dev', // Replace with your JWT worker URL
+    AI_WORKER_URL: 'https://markdowngpt-worker-ai.sethkeddy.workers.dev',   // Replace with your AI worker URL
     ENABLE_JWT: false // Set to false to disable JWT authentication
 };
 
