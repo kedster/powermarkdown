@@ -4,37 +4,114 @@
             currentFormat: null
         };
 
+        // Simple error logging
+        const errorLog = [];
+        
+        function logError(error, context) {
+            const timestamp = new Date().toISOString();
+            const logEntry = {
+                timestamp,
+                error: error.message || error,
+                context,
+                userAgent: navigator.userAgent.substring(0, 100) // Truncated for privacy
+            };
+            errorLog.push(logEntry);
+            console.error('PowerMarkdown Error:', logEntry);
+            
+            // Keep only last 10 errors
+            if (errorLog.length > 10) {
+                errorLog.shift();
+            }
+        }
+
+        // Global error handler
+        window.addEventListener('error', function(event) {
+            logError(event.error, 'Global error handler');
+        });
+
+        // Unhandled promise rejection handler
+        window.addEventListener('unhandledrejection', function(event) {
+            logError(event.reason, 'Unhandled promise rejection');
+        });
+
         const editor = document.getElementById('editor');
         const preview = document.getElementById('preview');
         const stats = document.getElementById('stats');
 
-        // Configure marked with syntax highlighting
-        marked.setOptions({
-            highlight: function(code, lang) {
-                if (lang && hljs.getLanguage(lang)) {
-                    try {
-                        return hljs.highlight(code, { language: lang }).value;
-                    } catch (err) {}
-                }
-                return hljs.highlightAuto(code).value;
-            },
-            breaks: true,
-            gfm: true
-        });
+        // Configure marked with syntax highlighting and security
+        if (typeof marked !== 'undefined') {
+            marked.setOptions({
+                highlight: function(code, lang) {
+                    if (typeof hljs !== 'undefined' && lang && hljs.getLanguage(lang)) {
+                        try {
+                            return hljs.highlight(code, { language: lang }).value;
+                        } catch (err) {
+                            logError(err, 'Syntax highlighting error');
+                        }
+                    }
+                    return typeof hljs !== 'undefined' ? hljs.highlightAuto(code).value : code;
+                },
+                breaks: true,
+                gfm: true,
+                sanitize: false, // We'll handle our own sanitization
+                smartypants: false // Disable for security
+            });
+        } else {
+            logError(new Error('marked.js not loaded'), 'Library loading');
+        }
+
+        // Simple HTML sanitization
+        function sanitizeHTML(html) {
+            // Create a temporary div to parse HTML
+            const temp = document.createElement('div');
+            temp.innerHTML = html;
+            
+            // Remove potentially dangerous tags
+            const dangerousTags = ['script', 'iframe', 'object', 'embed', 'form', 'input', 'button'];
+            dangerousTags.forEach(tag => {
+                const elements = temp.querySelectorAll(tag);
+                elements.forEach(el => el.remove());
+            });
+            
+            // Remove dangerous attributes
+            const allElements = temp.querySelectorAll('*');
+            allElements.forEach(el => {
+                // Remove event handlers and javascript: links
+                Array.from(el.attributes).forEach(attr => {
+                    if (attr.name.startsWith('on') || 
+                        (attr.value && attr.value.toLowerCase().includes('javascript:'))) {
+                        el.removeAttribute(attr.name);
+                    }
+                });
+            });
+            
+            return temp.innerHTML;
+        }
 
         // Real-time preview update
         editor.addEventListener('input', function() {
-            const content = editor.value;
-            editorState.content = content;
-            updatePreview(content);
-            updateStats(content);
+            try {
+                const content = editor.value;
+                editorState.content = content;
+                updatePreview(content);
+                updateStats(content);
+            } catch (error) {
+                logError(error, 'Editor input handler');
+            }
         });
 
         function updatePreview(content) {
             try {
-                preview.innerHTML = marked.parse(content);
+                if (typeof marked !== 'undefined') {
+                    const rawHTML = marked.parse(content);
+                    const sanitizedHTML = sanitizeHTML(rawHTML);
+                    preview.innerHTML = sanitizedHTML;
+                } else {
+                    preview.innerHTML = '<p style="color: orange;">Loading markdown parser...</p>';
+                }
             } catch (error) {
-                preview.innerHTML = '<p style="color: red;">Error parsing markdown</p>';
+                logError(error, 'Preview update');
+                preview.innerHTML = '<p style="color: red;">Error parsing markdown. Please check your syntax.</p>';
             }
         }
 
@@ -328,8 +405,27 @@ This project is licensed under the MIT License.`
         }
 
         function toggleExportMenu() {
-            const dropdown = document.getElementById('exportDropdown');
-            dropdown.classList.toggle('show');
+            try {
+                const dropdown = document.getElementById('exportDropdown');
+                const button = dropdown.previousElementSibling;
+                const isOpen = dropdown.classList.contains('show');
+                
+                dropdown.classList.toggle('show');
+                
+                // Update ARIA attributes
+                button.setAttribute('aria-expanded', !isOpen);
+                dropdown.setAttribute('aria-hidden', isOpen);
+                
+                // Focus first menu item when opened
+                if (!isOpen) {
+                    const firstMenuItem = dropdown.querySelector('.export-option');
+                    if (firstMenuItem) {
+                        firstMenuItem.focus();
+                    }
+                }
+            } catch (error) {
+                logError(error, 'Toggle export menu');
+            }
         }
 
         function exportMarkdown() {
@@ -388,7 +484,7 @@ ${preview.innerHTML}
         });
 
         // Initialize with default content
-        const defaultContent = `# Welcome to Markdown Power Surgeon! ⚡
+        const defaultContent = `# Welcome to PowerMarkdown! ⚡
 
 This editor is specifically optimized for **dev.to** and **ChatGPT** formatting with intelligent auto-formatting capabilities.
 
