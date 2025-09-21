@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="PowerMarkdown Terms of Service">
+    <title>Terms of Service - PowerMarkdown</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .legal-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        .legal-content {
+            line-height: 1.6;
+            color: #333;
+        }
+        .legal-content h1 {
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+        .legal-content h2 {
+            color: #764ba2;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="legal-container">
+            <a href="index.html" class="back-link">← Back to PowerMarkdown</a>
+            
+            <div class="legal-content">
+                <h1>Terms of Service</h1>
+                <p><strong>Last updated:</strong> <span id="last-updated"></span></p>
+
+                <h2>1. Acceptance of Terms</h2>
+                <p>By accessing and using PowerMarkdown, you accept and agree to be bound by the terms and provision of this agreement.</p>
+
+                <h2>2. Service Description</h2>
+                <p>PowerMarkdown is a free, client-side markdown editor that provides:</p>
+                <ul>
+                    <li>Real-time markdown editing and preview</li>
+                    <li>Auto-formatting capabilities</li>
+                    <li>Export functionality</li>
+                    <li>Platform-specific optimization (dev.to, ChatGPT)</li>
+                </ul>
+
+                <h2>3. Usage Limits</h2>
+                <p>PowerMarkdown is provided free of charge with the following terms:</p>
+                <ul>
+                    <li>No registration required</li>
+                    <li>Unlimited local usage</li>
+                    <li>Processing limited by your device's capabilities</li>
+                    <li>No server-side storage or processing</li>
+                </ul>
+
+                <h2>4. User Responsibilities</h2>
+                <p>You agree to:</p>
+                <ul>
+                    <li>Use the service for lawful purposes only</li>
+                    <li>Not attempt to reverse engineer or modify the application</li>
+                    <li>Respect third-party intellectual property rights</li>
+                    <li>Not use the service to create or distribute harmful content</li>
+                </ul>
+
+                <h2>5. Intellectual Property</h2>
+                <p>PowerMarkdown respects intellectual property rights. You retain all rights to content you create using the service.</p>
+
+                <h2>6. Disclaimer of Warranties</h2>
+                <p>PowerMarkdown is provided "as is" without warranties of any kind. We do not guarantee:</p>
+                <ul>
+                    <li>Uninterrupted service availability</li>
+                    <li>Error-free operation</li>
+                    <li>Compatibility with all devices or browsers</li>
+                    <li>Data preservation (content is client-side only)</li>
+                </ul>
+
+                <h2>7. Limitation of Liability</h2>
+                <p>In no event shall PowerMarkdown be liable for any indirect, incidental, special, consequential, or punitive damages.</p>
+
+                <h2>8. Service Modifications</h2>
+                <p>We reserve the right to modify or discontinue PowerMarkdown at any time without prior notice.</p>
+
+                <h2>9. Third-Party Services</h2>
+                <p>PowerMarkdown uses third-party CDN services (marked.js, highlight.js) which have their own terms of service.</p>
+
+                <h2>10. Governing Law</h2>
+                <p>These terms shall be governed by and construed in accordance with applicable laws.</p>
+
+                <h2>11. Changes to Terms</h2>
+                <p>We may revise these terms from time to time. Changes will be posted on this page with an updated date.</p>
+
+                <h2>12. Contact Information</h2>
+                <p>For questions about these terms, please create an issue on our GitHub repository.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Set current date
+        document.getElementById('last-updated').textContent = new Date().toLocaleDateString();
+    </script>
+</body>
+</html>

@@ -3,7 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Markdown Power Surgeon</title>
+    <meta name="description" content="PowerMarkdown - Advanced Markdown editor optimized for dev.to and ChatGPT with intelligent auto-formatting">
+    <meta name="keywords" content="markdown, editor, dev.to, chatgpt, formatting, live preview">
+    <meta name="author" content="PowerMarkdown">
+    
+    <!-- Security Headers -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' data:;">
+    
+    <title>PowerMarkdown</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css">
@@ -12,33 +23,33 @@
 <body>
     <div class="app-container">
         <div class="header">
-            <h1>Power Markdown</h1>
+            <h1>PowerMarkdown</h1>
             <p>Advanced Markdown editor optimized for dev.to and ChatGPT with intelligent auto-formatting</p>
         </div>
 
-        <div class="toolbar">
-            <button class="btn" onclick="insertFormat('**', '**', 'Bold text')">Bold</button>
-            <button class="btn" onclick="insertFormat('*', '*', 'Italic text')">Italic</button>
-            <button class="btn" onclick="insertFormat('`', '`', 'code')">Code</button>
-            <button class="btn" onclick="insertFormat('```\n', '\n```', 'code block')">Code Block</button>
-            <button class="btn" onclick="insertFormat('> ', '', 'Quote text')">Quote</button>
-            <button class="btn" onclick="insertFormat('- ', '', 'List item')">List</button>
-            <button class="btn" onclick="insertFormat('## ', '', 'Heading')">H2</button>
-            <button class="btn" onclick="insertFormat('### ', '', 'Heading')">H3</button>
-            <button class="btn secondary" onclick="autoFormat()">🪄 Auto Format</button>
-            <button class="btn secondary" onclick="optimizeForDevTo()">📝 dev.to Style</button>
-            <button class="btn secondary" onclick="optimizeForChatGPT()">🤖 ChatGPT Style</button>
+        <div class="toolbar" role="toolbar" aria-label="Formatting tools">
+            <button class="btn" onclick="insertFormat('**', '**', 'Bold text')" aria-label="Make text bold">Bold</button>
+            <button class="btn" onclick="insertFormat('*', '*', 'Italic text')" aria-label="Make text italic">Italic</button>
+            <button class="btn" onclick="insertFormat('`', '`', 'code')" aria-label="Insert inline code">Code</button>
+            <button class="btn" onclick="insertFormat('```\n', '\n```', 'code block')" aria-label="Insert code block">Code Block</button>
+            <button class="btn" onclick="insertFormat('> ', '', 'Quote text')" aria-label="Insert blockquote">Quote</button>
+            <button class="btn" onclick="insertFormat('- ', '', 'List item')" aria-label="Insert list item">List</button>
+            <button class="btn" onclick="insertFormat('## ', '', 'Heading')" aria-label="Insert level 2 heading">H2</button>
+            <button class="btn" onclick="insertFormat('### ', '', 'Heading')" aria-label="Insert level 3 heading">H3</button>
+            <button class="btn secondary" onclick="autoFormat()" aria-label="Auto format content">🪄 Auto Format</button>
+            <button class="btn secondary" onclick="optimizeForDevTo()" aria-label="Optimize for dev.to platform">📝 dev.to Style</button>
+            <button class="btn secondary" onclick="optimizeForChatGPT()" aria-label="Optimize for ChatGPT prompts">🤖 ChatGPT Style</button>
             
             <div class="export-menu">
-                <button class="btn" onclick="toggleExportMenu()">📤 Export</button>
-                <div class="export-dropdown" id="exportDropdown">
-                    <div class="export-option" onclick="exportMarkdown()">📝 Markdown (.md)</div>
-                    <div class="export-option" onclick="exportHTML()">🌐 HTML</div>
-                    <div class="export-option" onclick="copyToClipboard()">📋 Copy to Clipboard</div>
+                <button class="btn" onclick="toggleExportMenu()" aria-label="Export options" aria-expanded="false" aria-haspopup="true">📤 Export</button>
+                <div class="export-dropdown" id="exportDropdown" role="menu" aria-hidden="true">
+                    <div class="export-option" onclick="exportMarkdown()" role="menuitem" tabindex="0">📝 Markdown (.md)</div>
+                    <div class="export-option" onclick="exportHTML()" role="menuitem" tabindex="0">🌐 HTML</div>
+                    <div class="export-option" onclick="copyToClipboard()" role="menuitem" tabindex="0">📋 Copy to Clipboard</div>
                 </div>
             </div>
 
-            <div class="stats" id="stats">
+            <div class="stats" id="stats" aria-live="polite" aria-label="Document statistics">
                 Words: 0 | Characters: 0 | Lines: 0
             </div>
         </div>
@@ -46,9 +57,12 @@
         <div class="editor-container">
             <div class="editor-panel">
                 <div class="panel-header">📝 Editor</div>
-                <textarea class="editor" id="editor" placeholder="Start writing your markdown here...
+                <textarea class="editor" id="editor" 
+                         aria-label="Markdown editor" 
+                         spellcheck="true"
+                         placeholder="Start writing your markdown here...
 
-# Welcome to Markdown Power Surgeon!
+# Welcome to PowerMarkdown!
 
 This editor is optimized for **dev.to** and **ChatGPT** formatting.
 
@@ -63,7 +77,7 @@ Try the auto-format button to see the magic! ✨"></textarea>
 
             <div class="preview-panel">
                 <div class="panel-header">👁️ Live Preview</div>
-                <div class="preview" id="preview"></div>
+                <div class="preview" id="preview" aria-live="polite" aria-label="Markdown preview"></div>
             </div>
         </div>
 
@@ -88,6 +102,20 @@ Try the auto-format button to see the magic! ✨"></textarea>
                 </div>
             </div>
         </div>
+
+        <footer class="footer">
+            <div class="footer-content">
+                <p>&copy; 2024 PowerMarkdown. Free markdown editor for everyone.</p>
+                <div class="footer-links">
+                    <a href="privacy.html">Privacy Policy</a>
+                    <a href="terms.html">Terms of Service</a>
+                    <a href="https://github.com/kedster/powermarkdown" target="_blank" rel="noopener noreferrer">GitHub</a>
+                </div>
+                <div class="usage-info">
+                    <p><strong>Usage Limits:</strong> Unlimited free usage • Client-side processing only • No registration required</p>
+                </div>
+            </div>
+        </footer>
     </div>
     <script src="script.js"></script>
 </body>
