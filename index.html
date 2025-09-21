@@ -23,8 +23,18 @@
 <body>
     <div class="app-container">
         <div class="header">
-            <h1>PowerMarkdown</h1>
-            <p>Advanced Markdown editor optimized for dev.to and ChatGPT with intelligent auto-formatting</p>
+            <div class="header-content">
+                <div class="header-main">
+                    <h1>PowerMarkdown</h1>
+                    <p>Advanced Markdown editor optimized for dev.to and ChatGPT with intelligent auto-formatting</p>
+                </div>
+                <nav class="header-nav" role="navigation" aria-label="Main navigation">
+                    <a href="#editor" class="nav-link" aria-label="Go to editor">✏️ Editor</a>
+                    <a href="#formats" class="nav-link" aria-label="View formatting options">🎯 Formats</a>
+                    <a href="https://github.com/kedster/powermarkdown" target="_blank" rel="noopener noreferrer" class="nav-link" aria-label="View on GitHub">🔗 GitHub</a>
+                    <a href="#help" class="nav-link" onclick="showHelp()" aria-label="Show help">❓ Help</a>
+                </nav>
+            </div>
         </div>
 
         <div class="toolbar" role="toolbar" aria-label="Formatting tools">
@@ -54,7 +64,7 @@
             </div>
         </div>
 
-        <div class="editor-container">
+        <div class="editor-container" id="editor">
             <div class="editor-panel">
                 <div class="panel-header">📝 Editor</div>
                 <textarea class="editor" id="editor" 
@@ -81,7 +91,7 @@ Try the auto-format button to see the magic! ✨"></textarea>
             </div>
         </div>
 
-        <div class="format-panel">
+        <div class="format-panel" id="formats">
             <h3 style="margin-bottom: 15px; color: #333;">🎯 Smart Formatting Options</h3>
             <div class="format-options">
                 <div class="format-btn" data-format="dev-article" onclick="applyFormat(this, 'dev-article')">
@@ -105,14 +115,50 @@ Try the auto-format button to see the magic! ✨"></textarea>
 
         <footer class="footer">
             <div class="footer-content">
-                <p>&copy; 2024 PowerMarkdown. Free markdown editor for everyone.</p>
-                <div class="footer-links">
-                    <a href="privacy.html">Privacy Policy</a>
-                    <a href="terms.html">Terms of Service</a>
-                    <a href="https://github.com/kedster/powermarkdown" target="_blank" rel="noopener noreferrer">GitHub</a>
+                <div class="footer-main">
+                    <div class="footer-section">
+                        <h4>PowerMarkdown</h4>
+                        <p>Free, powerful markdown editor for developers</p>
+                        <div class="footer-stats">
+                            <span>✨ Client-side processing</span>
+                            <span>🔒 Privacy focused</span>
+                            <span>🆓 Always free</span>
+                        </div>
+                    </div>
+                    
+                    <div class="footer-section">
+                        <h4>Quick Links</h4>
+                        <div class="footer-links-column">
+                            <a href="#editor" onclick="scrollToSection('editor')">Editor</a>
+                            <a href="#formats" onclick="scrollToSection('formats')">Formats</a>
+                            <a href="https://github.com/kedster/powermarkdown/blob/main/README.md" target="_blank" rel="noopener noreferrer">Documentation</a>
+                            <a href="https://github.com/kedster/powermarkdown/releases" target="_blank" rel="noopener noreferrer">Releases</a>
+                        </div>
+                    </div>
+                    
+                    <div class="footer-section">
+                        <h4>Support & Community</h4>
+                        <div class="footer-links-column">
+                            <a href="https://github.com/kedster/powermarkdown/issues" target="_blank" rel="noopener noreferrer">Report Issues</a>
+                            <a href="https://github.com/kedster/powermarkdown/discussions" target="_blank" rel="noopener noreferrer">Discussions</a>
+                            <a href="https://github.com/kedster/powermarkdown" target="_blank" rel="noopener noreferrer">Contribute</a>
+                            <a href="mailto:support@powermarkdown.com?subject=PowerMarkdown Support">Contact Us</a>
+                        </div>
+                    </div>
                 </div>
-                <div class="usage-info">
-                    <p><strong>Usage Limits:</strong> Unlimited free usage • Client-side processing only • No registration required</p>
+                
+                <div class="footer-bottom">
+                    <div class="footer-legal">
+                        <p>&copy; 2024 PowerMarkdown. Free markdown editor for everyone.</p>
+                        <div class="footer-links">
+                            <a href="privacy.html">Privacy Policy</a>
+                            <a href="terms.html">Terms of Service</a>
+                            <a href="https://github.com/kedster/powermarkdown" target="_blank" rel="noopener noreferrer">GitHub</a>
+                        </div>
+                    </div>
+                    <div class="usage-info">
+                        <p><strong>Usage Limits:</strong> Unlimited free usage • Client-side processing only • No registration required</p>
+                    </div>
                 </div>
             </div>
         </footer>

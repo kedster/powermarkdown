@@ -527,3 +527,76 @@ console.log('Ready to create amazing content! 🎉');
         editor.value = defaultContent;
         updatePreview(defaultContent);
         updateStats(defaultContent);
+
+        // Navigation Functions
+        function scrollToSection(sectionId) {
+            try {
+                const element = document.getElementById(sectionId);
+                if (element) {
+                    element.scrollIntoView({ 
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            } catch (error) {
+                logError(error, 'scrollToSection');
+            }
+        }
+
+        function showHelp() {
+            try {
+                const helpContent = `
+# PowerMarkdown Help 🚀
+
+## Quick Start Guide
+
+### 1. Basic Editing
+- Type markdown directly in the editor
+- See live preview on the right
+- Use toolbar buttons for common formatting
+
+### 2. Auto-Formatting
+- Click **🪄 Auto Format** for intelligent formatting
+- Use **📝 dev.to Style** for blog posts
+- Use **🤖 ChatGPT Style** for clear prompts
+
+### 3. Export Options
+- **📝 Markdown (.md)**: Download as markdown file
+- **🌐 HTML**: Export as styled HTML
+- **📋 Copy to Clipboard**: Copy formatted text
+
+### 4. Navigation
+- Use header links to jump between sections
+- Scroll smoothly with navigation menu
+- All links are keyboard accessible
+
+### 5. Smart Templates
+Choose from format templates below:
+- **📚 Dev Article**: For blog posts and articles
+- **🎓 Tutorial**: Step-by-step guides
+- **🤖 ChatGPT**: Structured prompts
+- **📋 README**: Project documentation
+
+## Keyboard Shortcuts
+- **Ctrl/Cmd + S**: Export markdown
+- **Ctrl/Cmd + C**: Copy to clipboard
+- **Tab**: Navigate between elements
+
+## Need More Help?
+Visit our [GitHub repository](https://github.com/kedster/powermarkdown) for documentation, issues, and discussions.
+`;
+                const editor = document.getElementById('editor');
+                if (editor) {
+                    editor.value = helpContent;
+                    editor.dispatchEvent(new Event('input'));
+                    scrollToSection('editor');
+                }
+            } catch (error) {
+                logError(error, 'showHelp');
+                alert('Help content could not be loaded. Please visit our GitHub repository for documentation.');
+            }
+        }
+
+        // Make functions globally available
+        window.scrollToSection = scrollToSection;
+        window.showHelp = showHelp;
