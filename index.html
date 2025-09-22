@@ -38,36 +38,78 @@
         </div>
 
         <div class="toolbar" role="toolbar" aria-label="Formatting tools">
-            <button class="btn" onclick="insertFormat('**', '**', 'Bold text')" aria-label="Make text bold">Bold</button>
-            <button class="btn" onclick="insertFormat('*', '*', 'Italic text')" aria-label="Make text italic">Italic</button>
-            <button class="btn" onclick="insertFormat('`', '`', 'code')" aria-label="Insert inline code">Code</button>
-            <button class="btn" onclick="insertFormat('```\n', '\n```', 'code block')" aria-label="Insert code block">Code Block</button>
-            <button class="btn" onclick="insertFormat('> ', '', 'Quote text')" aria-label="Insert blockquote">Quote</button>
-            <button class="btn" onclick="insertFormat('- ', '', 'List item')" aria-label="Insert list item">List</button>
-            <button class="btn" onclick="insertFormat('## ', '', 'Heading')" aria-label="Insert level 2 heading">H2</button>
-            <button class="btn" onclick="insertFormat('### ', '', 'Heading')" aria-label="Insert level 3 heading">H3</button>
-            <button class="btn secondary" onclick="autoFormat()" aria-label="Auto format content">🪄 Auto Format</button>
-            <button class="btn secondary" onclick="optimizeForDevTo()" aria-label="Optimize for dev.to platform">📝 dev.to Style</button>
-            <button class="btn secondary" onclick="optimizeForChatGPT()" aria-label="Optimize for ChatGPT prompts">🤖 ChatGPT Style</button>
-            
-            <div class="export-menu">
-                <button class="btn" onclick="toggleExportMenu()" aria-label="Export options" aria-expanded="false" aria-haspopup="true">📤 Export</button>
-                <div class="export-dropdown" id="exportDropdown" role="menu" aria-hidden="true">
-                    <div class="export-option" onclick="exportMarkdown()" role="menuitem" tabindex="0">📝 Markdown (.md)</div>
-                    <div class="export-option" onclick="exportHTML()" role="menuitem" tabindex="0">🌐 HTML</div>
-                    <div class="export-option" onclick="copyToClipboard()" role="menuitem" tabindex="0">📋 Copy to Clipboard</div>
-                </div>
+            <!-- Basic Formatting -->
+            <div class="toolbar-group">
+                <button class="btn" onclick="insertFormat('**', '**', 'Bold text')" aria-label="Make text bold" title="Bold (Ctrl+B)">Bold</button>
+                <button class="btn" onclick="insertFormat('*', '*', 'Italic text')" aria-label="Make text italic" title="Italic (Ctrl+I)">Italic</button>
+                <button class="btn" onclick="insertFormat('~~', '~~', 'Strikethrough text')" aria-label="Add strikethrough" title="Strikethrough">~~Strike~~</button>
+                <button class="btn" onclick="insertFormat('`', '`', 'code')" aria-label="Insert inline code" title="Inline Code (Ctrl+`)">Code</button>
             </div>
 
-            <div class="stats" id="stats" aria-live="polite" aria-label="Document statistics">
-                Words: 0 | Characters: 0 | Lines: 0
+            <!-- Blocks & Structure -->
+            <div class="toolbar-group">
+                <button class="btn" onclick="insertFormat('```\n', '\n```', 'code block')" aria-label="Insert code block" title="Code Block">Code Block</button>
+                <button class="btn" onclick="insertFormat('> ', '', 'Quote text')" aria-label="Insert blockquote" title="Blockquote">Quote</button>
+                <button class="btn" onclick="insertFormat('- ', '', 'List item')" aria-label="Insert list item" title="Bullet List">• List</button>
+                <button class="btn" onclick="insertFormat('1. ', '', 'Numbered item')" aria-label="Insert numbered list" title="Numbered List">1. List</button>
+                <button class="btn" onclick="insertFormat('- [ ] ', '', 'Task item')" aria-label="Insert task list" title="Task List">☐ Task</button>
+            </div>
+
+            <!-- Headings -->
+            <div class="toolbar-group">
+                <button class="btn" onclick="insertFormat('# ', '', 'Main Heading')" aria-label="Insert level 1 heading" title="Heading 1">H1</button>
+                <button class="btn" onclick="insertFormat('## ', '', 'Heading')" aria-label="Insert level 2 heading" title="Heading 2">H2</button>
+                <button class="btn" onclick="insertFormat('### ', '', 'Heading')" aria-label="Insert level 3 heading" title="Heading 3">H3</button>
+            </div>
+
+            <!-- Advanced Tools -->
+            <div class="toolbar-group">
+                <button class="btn" onclick="insertTable()" aria-label="Insert table" title="Insert Table">📊 Table</button>
+                <button class="btn" onclick="insertLink()" aria-label="Insert link" title="Insert Link (Ctrl+L)">🔗 Link</button>
+                <button class="btn" onclick="insertHorizontalRule()" aria-label="Insert horizontal rule" title="Horizontal Rule">--- HR</button>
+            </div>
+
+            <!-- Text Tools -->
+            <div class="toolbar-group">
+                <button class="btn" onclick="transformText('upper')" aria-label="Transform to uppercase" title="UPPERCASE">ABC</button>
+                <button class="btn" onclick="transformText('lower')" aria-label="Transform to lowercase" title="lowercase">abc</button>
+                <button class="btn" onclick="transformText('title')" aria-label="Transform to title case" title="Title Case">Abc</button>
+            </div>
+
+            <!-- Smart Formatting -->
+            <div class="toolbar-group">
+                <button class="btn secondary" onclick="autoFormat()" aria-label="Auto format content" title="Auto Format">🪄 Auto Format</button>
+                <button class="btn secondary" onclick="optimizeForDevTo()" aria-label="Optimize for dev.to platform" title="dev.to Style">📝 dev.to Style</button>
+                <button class="btn secondary" onclick="optimizeForChatGPT()" aria-label="Optimize for ChatGPT prompts" title="ChatGPT Style">🤖 ChatGPT Style</button>
+            </div>
+            
+            <!-- Export & Utilities -->
+            <div class="toolbar-group">
+                <div class="export-menu">
+                    <button class="btn" onclick="toggleExportMenu()" aria-label="Export options" aria-expanded="false" aria-haspopup="true" title="Export Options">📤 Export</button>
+                    <div class="export-dropdown" id="exportDropdown" role="menu" aria-hidden="true">
+                        <div class="export-option" onclick="exportMarkdown()" role="menuitem" tabindex="0">📝 Markdown (.md)</div>
+                        <div class="export-option" onclick="exportHTML()" role="menuitem" tabindex="0">🌐 HTML</div>
+                        <div class="export-option" onclick="exportPlainText()" role="menuitem" tabindex="0">📄 Plain Text</div>
+                        <div class="export-option" onclick="copyToClipboard()" role="menuitem" tabindex="0">📋 Copy to Clipboard</div>
+                    </div>
+                </div>
+                <button class="btn" onclick="showFindReplace()" aria-label="Find and replace" title="Find & Replace (Ctrl+F)">🔍 Find</button>
+                <button class="btn" onclick="showKeyboardShortcuts()" aria-label="Show keyboard shortcuts" title="Keyboard Shortcuts">⌨️ Shortcuts</button>
+            </div>
+
+            <div class="stats-enhanced" id="stats" aria-live="polite" aria-label="Document statistics">
+                <span id="wordCount">Words: 0</span> | 
+                <span id="charCount">Characters: 0</span> | 
+                <span id="lineCount">Lines: 0</span> | 
+                <span id="readTime">Read time: 0 min</span>
             </div>
         </div>
 
         <div class="editor-container" id="editor">
             <div class="editor-panel">
                 <div class="panel-header">📝 Editor</div>
-                <textarea class="editor" id="editor" 
+                <textarea class="editor" id="markdownEditor" 
                          aria-label="Markdown editor" 
                          spellcheck="true"
                          placeholder="Start writing your markdown here...
@@ -242,6 +284,105 @@ Try the auto-format button to see the magic! ✨"></textarea>
                 </div>
             </div>
         </footer>
+
+        <!-- Find and Replace Modal -->
+        <div id="findReplaceModal" class="modal" style="display: none;" role="dialog" aria-labelledby="findReplaceTitle" aria-hidden="true">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="findReplaceTitle">Find & Replace</h3>
+                    <button class="modal-close" onclick="hideFindReplace()" aria-label="Close dialog">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="find-replace-form">
+                        <div class="form-group">
+                            <label for="findText">Find:</label>
+                            <input type="text" id="findText" placeholder="Enter text to find..." autocomplete="off">
+                            <button onclick="findNext()" class="btn small">Next</button>
+                            <button onclick="findPrevious()" class="btn small">Previous</button>
+                        </div>
+                        <div class="form-group">
+                            <label for="replaceText">Replace with:</label>
+                            <input type="text" id="replaceText" placeholder="Enter replacement text..." autocomplete="off">
+                            <button onclick="replaceNext()" class="btn small">Replace</button>
+                            <button onclick="replaceAll()" class="btn small secondary">Replace All</button>
+                        </div>
+                        <div class="find-options">
+                            <label><input type="checkbox" id="matchCase"> Match case</label>
+                            <label><input type="checkbox" id="wholeWords"> Whole words</label>
+                            <label><input type="checkbox" id="useRegex"> Use regex</label>
+                        </div>
+                        <div id="findStats" class="find-stats"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Keyboard Shortcuts Modal -->
+        <div id="shortcutsModal" class="modal" style="display: none;" role="dialog" aria-labelledby="shortcutsTitle" aria-hidden="true">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="shortcutsTitle">⌨️ Keyboard Shortcuts</h3>
+                    <button class="modal-close" onclick="hideKeyboardShortcuts()" aria-label="Close dialog">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="shortcuts-grid">
+                        <div class="shortcuts-section">
+                            <h4>Text Formatting</h4>
+                            <div class="shortcut-item">
+                                <span class="shortcut-key">Ctrl + B</span>
+                                <span class="shortcut-desc">Bold</span>
+                            </div>
+                            <div class="shortcut-item">
+                                <span class="shortcut-key">Ctrl + I</span>
+                                <span class="shortcut-desc">Italic</span>
+                            </div>
+                            <div class="shortcut-item">
+                                <span class="shortcut-key">Ctrl + `</span>
+                                <span class="shortcut-desc">Code</span>
+                            </div>
+                            <div class="shortcut-item">
+                                <span class="shortcut-key">Ctrl + L</span>
+                                <span class="shortcut-desc">Link</span>
+                            </div>
+                        </div>
+                        <div class="shortcuts-section">
+                            <h4>Editor Actions</h4>
+                            <div class="shortcut-item">
+                                <span class="shortcut-key">Ctrl + F</span>
+                                <span class="shortcut-desc">Find & Replace</span>
+                            </div>
+                            <div class="shortcut-item">
+                                <span class="shortcut-key">Ctrl + Z</span>
+                                <span class="shortcut-desc">Undo</span>
+                            </div>
+                            <div class="shortcut-item">
+                                <span class="shortcut-key">Ctrl + Y</span>
+                                <span class="shortcut-desc">Redo</span>
+                            </div>
+                            <div class="shortcut-item">
+                                <span class="shortcut-key">Tab</span>
+                                <span class="shortcut-desc">Indent</span>
+                            </div>
+                        </div>
+                        <div class="shortcuts-section">
+                            <h4>Navigation</h4>
+                            <div class="shortcut-item">
+                                <span class="shortcut-key">Ctrl + S</span>
+                                <span class="shortcut-desc">Export Markdown</span>
+                            </div>
+                            <div class="shortcut-item">
+                                <span class="shortcut-key">Ctrl + Enter</span>
+                                <span class="shortcut-desc">Auto Format</span>
+                            </div>
+                            <div class="shortcut-item">
+                                <span class="shortcut-key">Escape</span>
+                                <span class="shortcut-desc">Close Modals</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <script src="script.js"></script>
 </body>
