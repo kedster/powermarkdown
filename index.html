@@ -1,11 +1,57 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="PowerMarkdown - Advanced Markdown editor optimized for dev.to and ChatGPT with intelligent auto-formatting">
-    <meta name="keywords" content="markdown, editor, dev.to, chatgpt, formatting, live preview">
-    <meta name="author" content="PowerMarkdown">
+    <meta name="description" content="PowerMarkdown - Free online Markdown editor with live preview, optimized for dev.to articles and ChatGPT prompts. Features intelligent auto-formatting, export options, and privacy-focused client-side processing.">
+    <meta name="keywords" content="markdown editor, markdown live preview, dev.to editor, chatgpt markdown, markdown formatter, online markdown, markdown converter, free markdown editor, markdown tools, web markdown editor">
+    <meta name="author" content="Seth Keddy">
+    <meta name="application-name" content="PowerMarkdown">
+    <meta name="theme-color" content="#667eea">
+    <meta name="msapplication-TileColor" content="#667eea">
+    <meta name="msapplication-navbutton-color" content="#667eea">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="mobile-web-app-capable" content="yes">
+    
+    <!-- Additional SEO meta tags -->
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+    <meta name="googlebot" content="index, follow">
+    <meta name="bingbot" content="index, follow">
+    <meta name="language" content="English">
+    <meta name="distribution" content="global">
+    <meta name="rating" content="general">
+    <meta name="revisit-after" content="7 days">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://kedster.github.io/powermarkdown/">
+    <meta property="og:title" content="PowerMarkdown - Free Advanced Markdown Editor">
+    <meta property="og:description" content="Free online Markdown editor with live preview, optimized for dev.to articles and ChatGPT prompts. Features intelligent auto-formatting, export options, and privacy-focused client-side processing.">
+    <meta property="og:image" content="https://kedster.github.io/powermarkdown/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:site_name" content="PowerMarkdown">
+    <meta property="og:locale" content="en_US">
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://kedster.github.io/powermarkdown/">
+    <meta name="twitter:title" content="PowerMarkdown - Free Advanced Markdown Editor">
+    <meta name="twitter:description" content="Free online Markdown editor with live preview, optimized for dev.to articles and ChatGPT prompts. Features intelligent auto-formatting, export options, and privacy-focused client-side processing.">
+    <meta name="twitter:image" content="https://kedster.github.io/powermarkdown/twitter-card.png">
+    <meta name="twitter:creator" content="@sethkeddy">
+    <meta name="twitter:site" content="@sethkeddy">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://kedster.github.io/powermarkdown/">
+    
+    <!-- Favicons -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="manifest" href="site.webmanifest">
     
     <!-- Security Headers -->
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
@@ -14,7 +60,53 @@
     <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' data:;">
     
-    <title>PowerMarkdown</title>
+    <title>PowerMarkdown - Free Advanced Markdown Editor with Live Preview | Online Dev Tools</title>
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "PowerMarkdown",
+        "description": "Free online Markdown editor with live preview, optimized for dev.to articles and ChatGPT prompts. Features intelligent auto-formatting, export options, and privacy-focused client-side processing.",
+        "url": "https://kedster.github.io/powermarkdown/",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Web Browser",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        },
+        "creator": {
+            "@type": "Person",
+            "name": "Seth Keddy",
+            "url": "https://kedster.github.io",
+            "sameAs": [
+                "https://github.com/kedster",
+                "https://x.com/sethkeddy",
+                "https://www.linkedin.com/in/seth-keddy/",
+                "https://dev.to/kedster"
+            ]
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "PowerMarkdown",
+            "url": "https://kedster.github.io/powermarkdown/"
+        },
+        "features": [
+            "Live Markdown preview",
+            "Dev.to optimization",
+            "ChatGPT prompt formatting",
+            "Auto-formatting tools",
+            "Export to HTML/Markdown",
+            "Privacy-focused processing",
+            "No registration required",
+            "Free unlimited usage"
+        ],
+        "browserRequirements": "Requires JavaScript",
+        "permissions": "No permissions required"
+    }
+    </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css">

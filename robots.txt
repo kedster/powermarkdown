@@ -1,0 +1,15 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://kedster.github.io/powermarkdown/sitemap.xml
+
+# Specific allows
+Allow: /index.html
+Allow: /privacy.html
+Allow: /terms.html
+Allow: /styles.css
+Allow: /script.js
+
+# Crawl-delay to be respectful
+Crawl-delay: 1
