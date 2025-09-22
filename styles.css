@@ -337,6 +337,36 @@
             text-decoration: underline;
         }
 
+        .social-links {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .social-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #667eea;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            padding: 4px 0;
+        }
+
+        .social-link:hover {
+            color: #764ba2;
+            text-decoration: underline;
+            transform: translateX(2px);
+        }
+
+        .social-link svg {
+            flex-shrink: 0;
+            width: 20px;
+            height: 20px;
+        }
+
         .footer-bottom {
             border-top: 1px solid rgba(102, 126, 234, 0.1);
             padding-top: 20px;
@@ -405,6 +435,16 @@
             
             .stats {
                 margin: 10px 0 0 0;
+            }
+
+            .social-links {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 6px;
+            }
+
+            .social-link {
+                font-size: 0.85rem;
             }
         }
 
@@ -513,5 +553,11 @@
 
             .footer-section {
                 text-align: center;
+            }
+
+            .social-links {
+                justify-content: center;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
             }
         }
