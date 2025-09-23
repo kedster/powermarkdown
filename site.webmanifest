@@ -1,0 +1,21 @@
+{
+    "name": "PowerMarkdown",
+    "short_name": "PowerMarkdown",
+    "description": "Free advanced Markdown editor with live preview",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#667eea",
+    "icons": [
+        {
+            "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>",
+            "sizes": "any",
+            "type": "image/svg+xml"
+        }
+    ],
+    "categories": ["productivity", "developer", "utilities"],
+    "lang": "en",
+    "dir": "ltr",
+    "orientation": "any",
+    "scope": "/"
+}
