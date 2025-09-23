@@ -34,7 +34,7 @@
             logError(event.reason, 'Unhandled promise rejection');
         });
 
-        const editor = document.getElementById('editor');
+        const editor = document.getElementById('markdownEditor');
         const preview = document.getElementById('preview');
         const stats = document.getElementById('stats');
 
@@ -100,15 +100,62 @@
             }
         });
 
+        // Simple markdown parser fallback
+        function parseMarkdownSimple(content) {
+            let html = content
+                // Headers
+                .replace(/^### (.*$)/gm, '<h3>$1</h3>')
+                .replace(/^## (.*$)/gm, '<h2>$1</h2>')
+                .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+                // Bold and italic
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                // Strikethrough
+                .replace(/~~(.*?)~~/g, '<del>$1</del>')
+                // Inline code
+                .replace(/`([^`]+)`/g, '<code>$1</code>')
+                // Links
+                .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
+                // Code blocks
+                .replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>')
+                // Blockquotes
+                .replace(/^> (.*$)/gm, '<blockquote>$1</blockquote>')
+                // Lists
+                .replace(/^[\s]*-[\s]+(.*$)/gm, '<li>$1</li>')
+                .replace(/^[\s]*\d+\.[\s]+(.*$)/gm, '<li>$1</li>')
+                // Task lists
+                .replace(/^[\s]*-[\s]+\[[\s]\][\s]+(.*$)/gm, '<li>☐ $1</li>')
+                .replace(/^[\s]*-[\s]+\[x\][\s]+(.*$)/gm, '<li>☑ $1</li>')
+                // Horizontal rules
+                .replace(/^---$/gm, '<hr>')
+                // Line breaks
+                .replace(/\n\n/g, '</p><p>')
+                .replace(/\n/g, '<br>');
+
+            // Wrap lists
+            html = html.replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>');
+            
+            // Wrap paragraphs
+            if (!html.includes('<h1>') && !html.includes('<h2>') && !html.includes('<h3>') && 
+                !html.includes('<pre>') && !html.includes('<ul>')) {
+                html = '<p>' + html + '</p>';
+            }
+
+            return html;
+        }
+
         function updatePreview(content) {
             try {
+                let html;
                 if (typeof marked !== 'undefined') {
                     const rawHTML = marked.parse(content);
-                    const sanitizedHTML = sanitizeHTML(rawHTML);
-                    preview.innerHTML = sanitizedHTML;
+                    html = sanitizeHTML(rawHTML);
                 } else {
-                    preview.innerHTML = '<p style="color: orange;">Loading markdown parser...</p>';
+                    // Use simple fallback parser
+                    html = parseMarkdownSimple(content);
+                    html = sanitizeHTML(html);
                 }
+                preview.innerHTML = html;
             } catch (error) {
                 logError(error, 'Preview update');
                 preview.innerHTML = '<p style="color: red;">Error parsing markdown. Please check your syntax.</p>';
@@ -585,7 +632,7 @@ Choose from format templates below:
 ## Need More Help?
 Visit our [GitHub repository](https://github.com/kedster/powermarkdown) for documentation, issues, and discussions.
 `;
-                const editor = document.getElementById('editor');
+                const editor = document.getElementById('markdownEditor');
                 if (editor) {
                     editor.value = helpContent;
                     editor.dispatchEvent(new Event('input'));
@@ -600,3 +647,328 @@ Visit our [GitHub repository](https://github.com/kedster/powermarkdown) for docu
         // Make functions globally available
         window.scrollToSection = scrollToSection;
         window.showHelp = showHelp;
+
+        // Enhanced formatting tools
+        function insertTable() {
+            const tableMarkdown = `| Header 1 | Header 2 | Header 3 |
+|----------|----------|----------|
+| Cell 1   | Cell 2   | Cell 3   |
+| Cell 4   | Cell 5   | Cell 6   |`;
+            insertFormat('', '', tableMarkdown);
+        }
+
+        function insertLink() {
+            const selectedText = editor.value.substring(editor.selectionStart, editor.selectionEnd);
+            if (selectedText) {
+                insertFormat('[', '](https://example.com)', selectedText);
+            } else {
+                insertFormat('[', '](https://example.com)', 'Link text');
+            }
+        }
+
+        function insertHorizontalRule() {
+            insertFormat('\n---\n', '', '');
+        }
+
+        // Text transformation functions
+        function transformText(type) {
+            const start = editor.selectionStart;
+            const end = editor.selectionEnd;
+            const selectedText = editor.value.substring(start, end);
+            
+            if (!selectedText) {
+                alert('Please select text to transform');
+                return;
+            }
+
+            let transformedText;
+            switch (type) {
+                case 'upper':
+                    transformedText = selectedText.toUpperCase();
+                    break;
+                case 'lower':
+                    transformedText = selectedText.toLowerCase();
+                    break;
+                case 'title':
+                    transformedText = selectedText.replace(/\w\S*/g, (txt) => 
+                        txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
+                    );
+                    break;
+                default:
+                    return;
+            }
+
+            editor.value = editor.value.substring(0, start) + transformedText + editor.value.substring(end);
+            editor.setSelectionRange(start, start + transformedText.length);
+            editor.dispatchEvent(new Event('input'));
+        }
+
+        // Enhanced export functions
+        function exportPlainText() {
+            const content = editor.value;
+            // Simple markdown to plain text conversion
+            const plainText = content
+                .replace(/#{1,6}\s+/g, '') // Remove headers
+                .replace(/\*\*(.*?)\*\*/g, '$1') // Remove bold
+                .replace(/\*(.*?)\*/g, '$1') // Remove italic
+                .replace(/~~(.*?)~~/g, '$1') // Remove strikethrough
+                .replace(/`(.*?)`/g, '$1') // Remove inline code
+                .replace(/```[\s\S]*?```/g, '[Code Block]') // Replace code blocks
+                .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // Remove links, keep text
+                .replace(/^[\s]*[-\*\+]\s+/gm, '• ') // Convert lists
+                .replace(/^[\s]*\d+\.\s+/gm, '1. '); // Convert numbered lists
+            
+            downloadFile('document.txt', plainText, 'text/plain');
+        }
+
+        // Find and Replace functionality
+        let findMatches = [];
+        let currentMatchIndex = -1;
+
+        function showFindReplace() {
+            document.getElementById('findReplaceModal').style.display = 'flex';
+            document.getElementById('findReplaceModal').setAttribute('aria-hidden', 'false');
+            document.getElementById('findText').focus();
+        }
+
+        function hideFindReplace() {
+            document.getElementById('findReplaceModal').style.display = 'none';
+            document.getElementById('findReplaceModal').setAttribute('aria-hidden', 'true');
+            clearHighlights();
+        }
+
+        function findNext() {
+            const findText = document.getElementById('findText').value;
+            if (!findText) return;
+
+            performFind(findText);
+            if (findMatches.length > 0) {
+                currentMatchIndex = (currentMatchIndex + 1) % findMatches.length;
+                highlightMatch(currentMatchIndex);
+            }
+        }
+
+        function findPrevious() {
+            const findText = document.getElementById('findText').value;
+            if (!findText) return;
+
+            performFind(findText);
+            if (findMatches.length > 0) {
+                currentMatchIndex = currentMatchIndex <= 0 ? findMatches.length - 1 : currentMatchIndex - 1;
+                highlightMatch(currentMatchIndex);
+            }
+        }
+
+        function performFind(findText) {
+            const content = editor.value;
+            const matchCase = document.getElementById('matchCase').checked;
+            const wholeWords = document.getElementById('wholeWords').checked;
+            const useRegex = document.getElementById('useRegex').checked;
+
+            findMatches = [];
+            let searchText = findText;
+            
+            try {
+                if (useRegex) {
+                    const flags = matchCase ? 'g' : 'gi';
+                    const regex = new RegExp(searchText, flags);
+                    let match;
+                    while ((match = regex.exec(content)) !== null) {
+                        findMatches.push({ start: match.index, end: match.index + match[0].length });
+                        if (!regex.global) break;
+                    }
+                } else {
+                    if (wholeWords) {
+                        searchText = `\\b${escapeRegex(searchText)}\\b`;
+                    } else {
+                        searchText = escapeRegex(searchText);
+                    }
+                    const flags = matchCase ? 'g' : 'gi';
+                    const regex = new RegExp(searchText, flags);
+                    let match;
+                    while ((match = regex.exec(content)) !== null) {
+                        findMatches.push({ start: match.index, end: match.index + match[0].length });
+                    }
+                }
+            } catch (error) {
+                document.getElementById('findStats').textContent = 'Invalid regex pattern';
+                return;
+            }
+
+            document.getElementById('findStats').textContent = `${findMatches.length} matches found`;
+        }
+
+        function highlightMatch(index) {
+            if (index >= 0 && index < findMatches.length) {
+                const match = findMatches[index];
+                editor.focus();
+                editor.setSelectionRange(match.start, match.end);
+                document.getElementById('findStats').textContent = 
+                    `${findMatches.length} matches found (${index + 1}/${findMatches.length})`;
+            }
+        }
+
+        function replaceNext() {
+            const replaceText = document.getElementById('replaceText').value;
+            if (currentMatchIndex >= 0 && currentMatchIndex < findMatches.length) {
+                const match = findMatches[currentMatchIndex];
+                editor.value = editor.value.substring(0, match.start) + replaceText + 
+                              editor.value.substring(match.end);
+                editor.dispatchEvent(new Event('input'));
+                
+                // Update match positions
+                const lengthDiff = replaceText.length - (match.end - match.start);
+                for (let i = currentMatchIndex + 1; i < findMatches.length; i++) {
+                    findMatches[i].start += lengthDiff;
+                    findMatches[i].end += lengthDiff;
+                }
+                
+                findMatches.splice(currentMatchIndex, 1);
+                if (currentMatchIndex >= findMatches.length) {
+                    currentMatchIndex = 0;
+                }
+                
+                document.getElementById('findStats').textContent = `${findMatches.length} matches found`;
+                if (findMatches.length > 0) {
+                    highlightMatch(currentMatchIndex);
+                }
+            }
+        }
+
+        function replaceAll() {
+            const findText = document.getElementById('findText').value;
+            const replaceText = document.getElementById('replaceText').value;
+            if (!findText) return;
+
+            performFind(findText);
+            if (findMatches.length === 0) return;
+
+            let content = editor.value;
+            let offset = 0;
+            
+            for (const match of findMatches) {
+                const start = match.start + offset;
+                const end = match.end + offset;
+                content = content.substring(0, start) + replaceText + content.substring(end);
+                offset += replaceText.length - (match.end - match.start);
+            }
+
+            editor.value = content;
+            editor.dispatchEvent(new Event('input'));
+            
+            document.getElementById('findStats').textContent = `Replaced ${findMatches.length} matches`;
+            findMatches = [];
+            currentMatchIndex = -1;
+        }
+
+        function clearHighlights() {
+            findMatches = [];
+            currentMatchIndex = -1;
+        }
+
+        function escapeRegex(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
+        // Keyboard shortcuts modal
+        function showKeyboardShortcuts() {
+            document.getElementById('shortcutsModal').style.display = 'flex';
+            document.getElementById('shortcutsModal').setAttribute('aria-hidden', 'false');
+        }
+
+        function hideKeyboardShortcuts() {
+            document.getElementById('shortcutsModal').style.display = 'none';
+            document.getElementById('shortcutsModal').setAttribute('aria-hidden', 'true');
+        }
+
+        // Enhanced stats function
+        function updateStatsEnhanced(content) {
+            const words = content.trim() ? content.trim().split(/\s+/).length : 0;
+            const chars = content.length;
+            const lines = content.split('\n').length;
+            const readTime = Math.max(1, Math.ceil(words / 200)); // Average reading speed: 200 wpm
+
+            document.getElementById('wordCount').textContent = `Words: ${words}`;
+            document.getElementById('charCount').textContent = `Characters: ${chars}`;
+            document.getElementById('lineCount').textContent = `Lines: ${lines}`;
+            document.getElementById('readTime').textContent = `Read time: ${readTime} min`;
+        }
+
+        // Replace the old updateStats with the enhanced version
+        function updateStats(content) {
+            updateStatsEnhanced(content);
+        }
+
+        // Enhanced keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Ctrl/Cmd + B for bold
+            if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
+                e.preventDefault();
+                insertFormat('**', '**', 'Bold text');
+            }
+            
+            // Ctrl/Cmd + I for italic
+            if ((e.ctrlKey || e.metaKey) && e.key === 'i') {
+                e.preventDefault();
+                insertFormat('*', '*', 'Italic text');
+            }
+            
+            // Ctrl/Cmd + ` for code
+            if ((e.ctrlKey || e.metaKey) && e.key === '`') {
+                e.preventDefault();
+                insertFormat('`', '`', 'code');
+            }
+            
+            // Ctrl/Cmd + L for link
+            if ((e.ctrlKey || e.metaKey) && e.key === 'l') {
+                e.preventDefault();
+                insertLink();
+            }
+            
+            // Ctrl/Cmd + F for find
+            if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+                e.preventDefault();
+                showFindReplace();
+            }
+            
+            // Ctrl/Cmd + S for export
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                e.preventDefault();
+                exportMarkdown();
+            }
+            
+            // Ctrl/Cmd + Enter for auto format
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                e.preventDefault();
+                autoFormat();
+            }
+            
+            // Escape to close modals
+            if (e.key === 'Escape') {
+                hideFindReplace();
+                hideKeyboardShortcuts();
+            }
+        });
+
+        // Close modals when clicking outside
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal')) {
+                hideFindReplace();
+                hideKeyboardShortcuts();
+            }
+        });
+
+        // Make new functions globally available
+        window.insertTable = insertTable;
+        window.insertLink = insertLink;
+        window.insertHorizontalRule = insertHorizontalRule;
+        window.transformText = transformText;
+        window.exportPlainText = exportPlainText;
+        window.showFindReplace = showFindReplace;
+        window.hideFindReplace = hideFindReplace;
+        window.findNext = findNext;
+        window.findPrevious = findPrevious;
+        window.replaceNext = replaceNext;
+        window.replaceAll = replaceAll;
+        window.showKeyboardShortcuts = showKeyboardShortcuts;
+        window.hideKeyboardShortcuts = hideKeyboardShortcuts;
